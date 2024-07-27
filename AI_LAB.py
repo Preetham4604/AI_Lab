@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 def print_board(board):
     for row in board:
         print(" | ".join(row))
