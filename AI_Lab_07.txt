@@ -1,0 +1,32 @@
+class ForwardChaining:
+    def __init__(self, rules, facts):
+        self.rules = rules
+        self.facts = facts
+        self.applied_rules = set()
+    def apply_rule(self, rule):
+        antecedent, consequent = rule
+        if rule not in self.applied_rules and all(fact in self.facts for fact in antecedent):
+            self.facts.add(consequent)
+            self.applied_rules.add(rule)
+            return True
+        return False
+    def infer(self):
+        new_facts_added = True
+        while new_facts_added:
+            new_facts_added = False
+            for rule in self.rules:
+                if self.apply_rule(rule):
+                    new_facts_added = True
+                    print(f"New fact inferred: {rule[1]}")
+        return self.facts
+
+rules = [
+(frozenset({"fever", "cough"}), "flu"),
+(frozenset({"fever", "rash"}), "measles"),
+(frozenset({"headache", "fever", "body_ache"}), "dengue")
+]
+
+facts = {"fever", "headache","body_ache"}
+fc = ForwardChaining(rules, facts)
+inferred_facts = fc.infer()
+print("Final inferred facts (including diagnosis):", inferred_facts)

@@ -1,0 +1,23 @@
+def nearest_neighbor_tsp(graph):
+    import numpy as np
+    num_cities = len(graph)
+    visited = [False] * num_cities
+    tour = []
+    current_city = 0
+    tour.append(current_city)
+    visited[current_city] = True
+    for _ in range(num_cities - 1):
+        nearest_city = np.argmin([graph[current_city][j] if not visited[j] else float('inf') for j in range(num_cities)])
+        tour.append(nearest_city)
+        visited[nearest_city] = True
+        current_city = nearest_city
+    tour.append(tour[0]) # return to start
+    return tour
+
+graph = [
+[0, 29, 20, 21],
+[29, 0, 15, 17],
+[20, 15, 0, 28],
+[21, 17, 28, 0]
+]
+print("Nearest Neighbor TSP Tour:", nearest_neighbor_tsp(graph))

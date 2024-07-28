@@ -1,0 +1,48 @@
+import heapq
+class Graph:
+    def __init__(self, adjac_lis, heuristic):
+        self.adjac_lis = adjac_lis
+        self.heuristic = heuristic
+    def get_neighbours(self, node):
+        return self.adjac_lis.get(node, [])
+    def a_star_algorithm(self, start, stop):
+        open_list = []
+        heapq.heappush(open_list, (0, start))
+        closed_list = set()
+        g_costs = {start: 0}
+        parent = {start: None}
+        while open_list:
+            current_cost, current_node = heapq.heappop(open_list)
+            if current_node in closed_list:
+                continue
+            if current_node == stop:
+                path = []
+                while current_node:
+                    path.append(current_node)
+                    current_node = parent[current_node]
+                path.reverse()
+                print(f"Path found: {path}")
+                return path
+            closed_list.add(current_node)
+            for neighbour, weight in self.get_neighbours(current_node):
+                if neighbour in closed_list:
+                    continue
+                tentative_g_cost = g_costs[current_node] + weight
+                if tentative_g_cost < g_costs.get(neighbour, float('inf')):
+                    g_costs[neighbour] = tentative_g_cost
+                    f_cost = tentative_g_cost + self.heuristic[neighbour]
+                    heapq.heappush(open_list, (f_cost, neighbour))
+                    parent[neighbour] = current_node
+        print("Path does not exist")
+        return None
+
+
+
+adjac_lis = {
+    'A': [('B', 1), ('C', 3), ('D', 7)],
+    'B': [('D', 5)],
+    'C': [('D', 12)]
+}
+heuristic = {'A': 1, 'B': 1, 'C': 1, 'D': 1}
+graph1 = Graph(adjac_lis, heuristic)
+graph1.a_star_algorithm('A', 'D')

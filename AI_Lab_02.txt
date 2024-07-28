@@ -1,0 +1,69 @@
+import heapq 
+def is_valid(state): 
+    missionaries, cannibals, boat = state 
+    if missionaries < 0 or cannibals < 0 or missionaries > 3 or cannibals > 3: 
+         return False 
+    if missionaries > 0 and missionaries < cannibals: 
+        return False 
+    if missionaries < 3 and (3 - missionaries) < (3 - cannibals): 
+        return False 
+    return True 
+def is_goal(state): 
+    missionaries, cannibals, boat = state 
+    return missionaries == 0 and cannibals == 0 and boat == 0 
+def generate_successors(state): 
+    successors = [] 
+    missionaries, cannibals, boat = state 
+    if boat == 1: 
+        for m in range(3): 
+            for c in range(3): 
+                if 1 <= m + c <= 2: 
+                    new_state = (missionaries - m, cannibals - c, 0) 
+                    if is_valid(new_state): 
+                        successors.append(new_state) 
+    else: 
+        for m in range(3): 
+            for c in range(3): 
+                if 1 <= m + c <= 2: 
+                    new_state = (missionaries + m, cannibals + c, 1) 
+                    if is_valid(new_state): 
+                        successors.append(new_state) 
+    return successors 
+
+def heuristic(state): 
+    missionaries, cannibals, boat = state 
+    return missionaries + cannibals 
+
+def best_first_search(): 
+    start_state = (3, 3, 1) 
+    frontier = [] 
+    heapq.heappush(frontier, (heuristic(start_state), start_state, 0, None)) 
+    explored = set() 
+  
+    while frontier: 
+        _, current_state, depth, parent = heapq.heappop(frontier) 
+        if is_goal(current_state): 
+            return current_state, depth, parent 
+  
+        explored.add(current_state) 
+  
+        for successor in generate_successors(current_state): 
+            if successor not in explored: 
+                heapq.heappush(frontier, (heuristic(successor), successor, depth + 1, (current_state, depth, parent)))   
+    return None 
+def print_solution(solution): 
+    path = [] 
+    while solution: 
+        state, depth, parent = solution 
+        path.append(state) 
+        solution = parent 
+    path.reverse() 
+  
+    for missionaries, cannibals, boat in path: 
+        print(f"Missionaries: {missionaries}, Cannibals: {cannibals}, Boat: {boat}") 
+solution = best_first_search() 
+if solution: 
+    print("Solution found:") 
+    print_solution(solution) 
+else: 
+    print("No solution found.") 

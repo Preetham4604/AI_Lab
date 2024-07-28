@@ -1,0 +1,40 @@
+from itertools import *
+def negate(literal): 
+    if literal.startswith('~'): 
+        return literal[1:] 
+    else: 
+        return '~'+literal 
+def apply_resolution (clause1, clause2): 
+    resolvents = set() 
+    for literal1 in clause1: 
+        for literal2 in clause2: 
+            if literal1 == negate(literal2):
+                new_clause = (clausel - {literal1})| (clause2-{literal2} )
+                if not new_clause: 
+                    return {frozenset()} 
+                resolvents.add(frozenset (new_clause)) 
+    return resolvents 
+def resolution (clauses): 
+    new =set() 
+    while True: 
+        n = len(clauses) 
+        pairs = list(combinations (clauses, 2))  
+        for (clause1, clause2) in pairs:
+            resolvents = apply_resolution(clause1, clause2)
+            if frozenset() in resolvents: 
+                return True 
+            new = new.union (resolvents)
+        if new.issubset (clauses): 
+            return False 
+        clauses=clauses.union(new)
+            
+clauses = { 
+frozenset({'~Human(x)', 'Mortal(x)'}),
+frozenset({'Human (Socrates)'}), 
+frozenset({'~Mortal (Socrates)'}) }
+
+if resolution (clauses): 
+     print("The knowledge base entails the conclusion (contradiction found).")
+else:
+    print("The knowledge base does not entail the conclusion (no contradiction found).") 
+
